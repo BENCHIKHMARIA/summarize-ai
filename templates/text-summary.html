@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@32,400,0,0" />
+    <title>Text Summary</title>
+    <style>
+        
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            min-height: 100vh;
+            background-color: #fff;
+        }
+ 
+        
+        .sidebar {
+            width: 250px;
+            transition: width 0.3s ease;
+            background-color: #f8f9fa;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+ 
+        .sidebar.close .text {
+            display: none;
+        }
+ 
+        .sidebar.close .toggle {
+            transform: rotate(180deg);
+        }
+ 
+        .main-content {
+            flex-grow: 1;
+            transition: margin-left 0.3s ease;
+            padding: 20px;
+        }
+ 
+        .sidebar.close + .main-content {
+            margin-left: 60px;
+        }
+ 
+        .sidebar:not(.close) + .main-content {
+            margin-left: 250px;
+        }
+ 
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+ 
+        .tool__container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+ 
+        .mode-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+ 
+        .mode {
+            background-color: #f2f2f2;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+ 
+        .mode.active {
+            background-color: #e6e6e6;
+            font-weight: bold;
+        }
+ 
+        .slider-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            gap: 10px;
+        }
+ 
+        .slider-container input[type="range"] {
+            width: 200px; /* Smaller slider */
+            -webkit-appearance: none;
+            appearance: none;
+            height: 8px;
+            background: #ddd;
+            border-radius: 5px;
+            outline: none;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+ 
+        .slider-container input[type="range"]:hover {
+            opacity: 1;
+        }
+ 
+        .slider-container input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #695CFE;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+ 
+        .slider-container input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #695CFE;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+ 
+        .slider-container span {
+            font-size: 14px;
+            color: #666;
+        }
+ 
+        .textarea {
+            width: 100%;
+            height: 250px;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+            resize: none;
+            box-sizing: border-box;
+        }
+ 
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+ 
+        .summarize-button button {
+            background-color: #695CFE;
+            color: #fff;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+ 
+        .summarize-button button:hover {
+            background-color: #5A4EFB;
+        }
+ 
+        .summarize-button button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+ 
+        .new-summary-button button {
+            background-color: #f2f2f2;
+            color: #333;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+ 
+        .new-summary-button button:hover {
+            background-color: #e6e6e6;
+        }
+ 
+        .file-upload-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+ 
+        .file-upload-section .browse-file {
+            background-color: #f2f2f2;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+ 
+        .word-count {
+            font-size: 14px;
+            color: #666;
+        }
+ 
+        .flex-row {
+            display: flex;
+            gap: 20px;
+        }
+ 
+        .flex-row .input__box,
+        .flex-row .output__box {
+            flex: 1;
+        }
+ 
+        .output__box .textarea {
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <nav class="sidebar close">
+        <header>
+            <div class="image-text">
+                <span class="image"></span>
+                <div class="text logo-text">
+                    <span class="name">SummarizeAI</span>
+                </div>
+            </div>
+            <i class='bx bx-chevron-right toggle'></i>
+        </header>
+ 
+        <div class="menu-bar">
+            <div class="menu">
+                <li class="new-chat">
+                    <a href="/">
+                        <i class='bx bx-message-square-add icon'></i>
+                        <span class="text nav-text">New Chat</span>
+                    </a>
+                </li>
+ 
+                <ul class="menu-links">
+                    <li class="nav-link">
+                        <a href="/video-summary">
+                            <i class='bx bx-video icon'></i>
+                            <span class="text nav-text">Video Summary</span>
+                        </a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="/file-summary">
+                            <i class='bx bx-file icon'></i>
+                            <span class="text nav-text">Files Summary</span>
+                        </a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="/text-summary">
+                            <i class='bx bx-paragraph icon'></i>
+                            <span class="text nav-text">Texts Summary</span>
+                        </a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="/history">
+                            <i class='bx bx-history icon'></i>
+                            <span class="text nav-text">History</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+ 
+    <section class="main-content">
+        <div class="container tool-section">
+            <div class="tool__container">
+                <!-- Mode Section -->
+                <div class="mode-section">
+                    <div class="mode active">AI Summarizer</div>
+                </div>
+ 
+                <!-- Slider Section -->
+                <div class="slider-container">
+                    <span>Short</span>
+                    <input type="range" id="summaryLength" min="1" max="3" value="2">
+                    <span>Long</span>
+                </div>
+ 
+                
+                <div class="flex-row">
+                    <div class="input__box">
+                        <textarea id="inputText" class="textarea" placeholder="Start to type or paste your text..." maxlength="10000"></textarea>
+                    </div>
+                    <div class="output__box">
+                        <textarea id="outputText" class="textarea" placeholder="Summary..." readonly></textarea>
+                    </div>
+                </div>
+ 
+                
+                <div class="button-container">
+                   
+                    <div class="summarize-button">
+                        <button id="summarizeBtn" type="button">Summarize</button>
+                    </div>
+ 
+                   
+                    <div class="new-summary-button">
+                        <button id="newSummaryBtn" type="button">New Summary</button>
+                    </div>
+                </div>
+ 
+                
+                <div class="file-upload-section">
+                    <div class="word-count">Word Count: <span id="wordCount">0</span>/10000</div>
+                </div>
+            </div>
+        </div>
+    </section>
+ 
+    <script>
+        const body = document.querySelector('body'),
+            sidebar = body.querySelector('nav'),
+            toggle = body.querySelector(".toggle");
+ 
+        toggle.addEventListener("click", () => {
+            sidebar.classList.toggle("close");
+        });
+ 
+        
+        const inputText = document.getElementById('inputText');
+        const wordCount = document.getElementById('wordCount');
+ 
+        inputText.addEventListener('input', () => {
+            const text = inputText.value.trim();
+            const words = text.split(/\s+/).filter(word => word.length > 0);
+            wordCount.textContent = words.length;
+ 
+            
+            if (words.length > 10000) {
+                inputText.value = words.slice(0, 10000).join(' ');
+                wordCount.textContent = 10000;
+            }
+        });
+ 
+        const summarizeBtn = document.getElementById('summarizeBtn');
+        const outputText = document.getElementById('outputText');
+        const summaryLength = document.getElementById('summaryLength');
+ 
+        
+        const SENTENCES_BY_LENGTH = { '1': 2, '2': 4, '3': 7 };
+ 
+        
+        function summaryToText(summary) {
+            if (!summary) return '';
+            if (typeof summary === 'string') return summary;
+            if (Array.isArray(summary)) return summary.join('\n');
+            return Object.entries(summary).map(([key, value]) => {
+                const title = key.replace(/_/g, ' ');
+                const body = Array.isArray(value) ? '\n- ' + value.join('\n- ') : ' ' + value;
+                return `${title}:${body}`;
+            }).join('\n\n');
+        }
+ 
+        
+        summarizeBtn.addEventListener('click', async () => {
+            const input = inputText.value.trim();
+            if (!input) {
+                alert('Please enter some text to summarize.');
+                return;
+            }
+ 
+            const formData = new FormData();
+            formData.append('text', input);
+            formData.append('num_sentences', SENTENCES_BY_LENGTH[summaryLength.value] || 2);
+ 
+            outputText.value = 'Processing... Please wait.';
+            summarizeBtn.disabled = true;
+ 
+            try {
+                const response = await fetch('/summarize', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+ 
+                if (!response.ok || data.error) {
+                    outputText.value = 'Error: ' + (data.error || 'Unknown error');
+                    return;
+                }
+                outputText.value = summaryToText(data.summary);
+            } catch (err) {
+                outputText.value = 'Network error: ' + err.message;
+            } finally {
+                summarizeBtn.disabled = false;
+            }
+        });
+ 
+        
+        const newSummaryBtn = document.getElementById('newSummaryBtn');
+ 
+        newSummaryBtn.addEventListener('click', () => {
+            inputText.value = '';
+            outputText.value = '';
+            wordCount.textContent = 0;
+        });
+    </script>
+</body>
+</html>
+ 

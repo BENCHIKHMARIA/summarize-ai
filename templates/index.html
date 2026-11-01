@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Summarize Ai</title> 
+        <link rel="icon" type="image/x-icon" sizes="32x32" href="{{ url_for('static', filename='images/LOGO.png') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+        <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@32,400,0,0" />
+    </head>
+<body>
+ 
+    <nav class="sidebar close">
+        <header>
+            <div class="image-text">
+                <span class="image">   
+                </span>
+                <div class="text logo-text">
+                    <span class="name">SummarizeAI</span>
+                    
+                </div>
+            </div>
+            <i class='bx bx-chevron-right toggle'></i>
+        </header>
+ 
+        <div class="menu-bar">
+            <div class="menu">
+                <li class="new-chat">
+                    <a href="/">
+                        <i class='bx bx-message-square-add icon'></i>
+                        <span class="text nav-text">New Chat</span>
+                    </a>
+                </li>
+ 
+                <ul class="menu-links">
+                    <li class="nav-link">
+                        <a href="/video-summary">
+                            <i class='bx bx-video icon'></i>
+                            <span class="text nav-text">Video Summary</span>
+                        </a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="/file-summary">
+                            <i class='bx bx-file icon'></i>
+                            <span class="text nav-text">Files Summary</span>
+                        </a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="/text-summary">
+                            <i class='bx bx-paragraph icon'></i>
+                            <span class="text nav-text">Texts Summary</span>
+                        </a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="/history">
+                            <i class='bx bx-history icon'></i>
+                            <span class="text nav-text">History</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+ 
+    <section class="home">
+        <div class="container">
+            <header class="app-header">
+                <h4 class="heading">Summarize Videos, Files, and Text</h4>
+                <p>Paste a link, upload a file, or enter text to get a summary instantly.</p>
+            </header>
+ 
+            <ul class="suggestions">
+                <li class="suggestions-item"><a href="/text-summary"><p class="text">Summarize Text</p><span class="icon material-symbols-rounded">article</span></a></li>
+                <li class="suggestions-item"><a href="/video-summary"><p class="text">Summarize Video</p><span class="icon material-symbols-rounded">video</span></a></li>
+                <li class="suggestions-item"><a href="/file-summary"><p class="text">Summarize File</p><span class="icon material-symbols-rounded">description</span></a></li>
+            </ul>
+        </div>
+    </section>
+ 
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const sidebar = document.querySelector("nav.sidebar");
+            const toggle = document.querySelector(".toggle");
+ 
+            // Sidebar toggle
+            if (toggle) {
+                toggle.addEventListener("click", () => {
+                    sidebar.classList.toggle("close");
+                });
+            }
+        });
+    </script>
+</body>
+</html>
+ 

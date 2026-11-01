@@ -1,0 +1,25 @@
+# Virtual environments
+.venv/
+venv/
+pfe_envirennement/
+pfe_environnement/
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.pyc
+
+# Local data (never publish)
+*.db
+*.sqlite3
+.env
+output/
+
+# User uploads: keep the folder, ignore its content
+uploads/*
+!uploads/.gitkeep

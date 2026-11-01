@@ -1,0 +1,12 @@
+Flask
+PyPDF2
+python-docx
+nltk
+numpy
+scikit-learn
+requests
+youtube-transcript-api
+pytubefix
+faster-whisper
+av<19
+ 

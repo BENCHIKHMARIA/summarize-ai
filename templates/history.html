@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History - SummarizeAI</title>
+    <link rel="icon" type="image/x-icon" sizes="32x32" href="{{ url_for('static', filename='images/LOGO.png') }}">
+    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@32,400,0,0" />
+    <style>
+        
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fff; 
+            color: #333;
+            display: flex;
+            min-height: 100vh; 
+        }
+ 
+       
+        .sidebar {
+            width: 300px; 
+            background-color: #f5f5f5; 
+            flex-shrink: 0; 
+            transition: width 0.3s ease;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1); 
+            position: fixed; 
+            height: 100vh; 
+            z-index: 100; 
+        }
+ 
+        .sidebar.close {
+            width: 80px; 
+        }
+ 
+       
+        .history-page {
+            background-color: #fff;
+            flex: 1; 
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            margin-left: 300px; 
+            margin-top: 20px;
+            margin-right: 20px;
+            z-index: 1; 
+        }
+ 
+        .sidebar.close ~ .history-page {
+            margin-left: 80px; 
+        }
+ 
+        .header {
+            margin-bottom: 20px;
+        }
+ 
+        .header h4 {
+            margin: 0;
+            font-size: 24px; 
+        }
+ 
+        .header p {
+            margin: 5px 0;
+            color: #666;
+            font-size: 16px; 
+        }
+ 
+       
+        .history-container {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px; 
+        }
+ 
+        .history-empty {
+            color: #666;
+            font-size: 14px;
+        }
+ 
+        .history-item {
+            display: flex;
+            align-items: center;
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+ 
+        .history-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+ 
+        
+        .history-icon {
+            font-size: 24px; 
+            margin-right: 15px; 
+            color: #2196F3;
+        }
+ 
+        
+        .history-details {
+            flex: 1;
+            text-align: left; 
+            min-width: 0;
+        }
+ 
+        .history-details h5 {
+            margin: 0;
+            font-size: 18px; 
+            color: #333;
+        }
+ 
+        .history-details p {
+            margin: 5px 0;
+            font-size: 14px; 
+            color: #666;
+            white-space: pre-wrap;
+        }
+ 
+        .history-details .history-date {
+            font-size: 12px; 
+            color: #999;
+        }
+ 
+        
+        .history-delete {
+            background: none;
+            border: none;
+            color: #c0392b;
+            font-size: 22px;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 6px;
+        }
+ 
+        .history-delete:hover {
+            background-color: rgba(192, 57, 43, 0.1);
+        }
+ 
+        
+        .dark .history-page {
+            background-color: #242526;
+        }
+ 
+        .dark .history-item {
+            background-color: #333;
+            color: #fff;
+        }
+ 
+        .dark .history-details h5 {
+            color: #fff;
+        }
+ 
+        .dark .history-details p {
+            color: #ccc;
+        }
+ 
+        .dark .history-details .history-date {
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+ 
+    
+    <nav class="sidebar close">
+        <header>
+            <div class="image-text">
+                <span class="image"></span>
+                <div class="text logo-text">
+                    <span class="name">SummarizeAI</span>
+                </div>
+            </div>
+            <i class='bx bx-chevron-right toggle'></i>
+        </header>
+ 
+        <div class="menu-bar">
+            <div class="menu">
+                <li class="new-chat">
+                    <a href="/">
+                        <i class='bx bx-message-square-add icon'></i>
+                        <span class="text nav-text">New Chat</span>
+                    </a>
+                </li>
+ 
+                <ul class="menu-links">
+                    <li class="nav-link">
+                        <a href="/video-summary">
+                            <i class='bx bx-video icon'></i>
+                            <span class="text nav-text">Video Summary</span>
+                        </a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="/file-summary">
+                            <i class='bx bx-file icon'></i>
+                            <span class="text nav-text">Files Summary</span>
+                        </a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="/text-summary">
+                            <i class='bx bx-paragraph icon'></i>
+                            <span class="text nav-text">Texts Summary</span>
+                        </a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="/history">
+                            <i class='bx bx-history icon'></i>
+                            <span class="text nav-text">History</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+ 
+    
+    <div class="history-page">
+        <header class="header">
+            <h4 class="heading">History</h4>
+            <p>View your past interactions and summaries.</p>
+        </header>
+ 
+        <div class="history-container">
+            
+        </div>
+    </div>
+ 
+    <script>
+        const body = document.querySelector('body'),
+            sidebar = body.querySelector('nav'),
+            toggle = body.querySelector(".toggle");
+ 
+        toggle.addEventListener("click", () => {
+            sidebar.classList.toggle("close");
+        });
+ 
+        const historyContainer = document.querySelector('.history-container');
+ 
+        
+        function summaryToText(summary) {
+            if (!summary) return '';
+            if (typeof summary === 'string') return summary;
+            if (Array.isArray(summary)) return summary.join('\n');
+            return Object.entries(summary).map(([key, value]) => {
+                const title = key.replace(/_/g, ' ');
+                const text = Array.isArray(value) ? '\n- ' + value.join('\n- ') : ' ' + value;
+                return `${title}:${text}`;
+            }).join('\n\n');
+        }
+ 
+        const ICONS = {
+            file: 'bx bx-file',
+            video: 'bx bx-video',
+            text: 'bx bx-paragraph'
+        };
+ 
+        function buildTitle(session) {
+            if (session.video_info && session.video_info.title) return session.video_info.title;
+            if (session.filename) return session.filename;
+            if (session.content_type === 'text') return 'Text summary';
+            if (session.content_type === 'video') return 'Video summary';
+            return 'Summary';
+        }
+ 
+        function addHistoryItem(session) {
+            const fullText = summaryToText(session.summary);
+            const preview = fullText.length > 200 ? fullText.slice(0, 200) + '...' : fullText;
+ 
+            const item = document.createElement('div');
+            item.classList.add('history-item');
+ 
+            const icon = document.createElement('div');
+            icon.classList.add('history-icon');
+            const i = document.createElement('i');
+            i.className = ICONS[session.content_type] || 'bx bx-file';
+            icon.appendChild(i);
+ 
+            const details = document.createElement('div');
+            details.classList.add('history-details');
+ 
+            const title = document.createElement('h5');
+            title.textContent = buildTitle(session);
+ 
+            const content = document.createElement('p');
+            content.textContent = preview;
+ 
+            const date = document.createElement('p');
+            date.classList.add('history-date');
+            date.textContent = session.timestamp ? new Date(session.timestamp).toLocaleString() : '';
+ 
+            details.append(title, content, date);
+ 
+            
+            let expanded = false;
+            item.addEventListener('click', () => {
+                expanded = !expanded;
+                content.textContent = expanded ? fullText : preview;
+            });
+ 
+           
+            const del = document.createElement('button');
+            del.classList.add('history-delete');
+            del.title = 'Delete';
+            del.innerHTML = "<i class='bx bx-trash'></i>";
+            del.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                if (!confirm('Delete this item from your history?')) return;
+                try {
+                    const res = await fetch(`/delete-session/${session.id}`, { method: 'DELETE' });
+                    const data = await res.json();
+                    if (data.success) {
+                        item.remove();
+                        if (!historyContainer.children.length) showEmpty();
+                    } else {
+                        alert(data.message || 'Could not delete this item.');
+                    }
+                } catch (err) {
+                    alert('Network error: ' + err.message);
+                }
+            });
+ 
+            item.append(icon, details, del);
+            historyContainer.appendChild(item);
+        }
+ 
+        function showEmpty(message) {
+            historyContainer.innerHTML = '';
+            const p = document.createElement('p');
+            p.classList.add('history-empty');
+            p.textContent = message || 'No history yet. Summarize some text, a file or a video to see it here.';
+            historyContainer.appendChild(p);
+        }
+ 
+        
+        async function loadHistory() {
+            try {
+                const res = await fetch('/get-all-sessions');
+                const data = await res.json();
+                const sessions = data.sessions || [];
+ 
+                historyContainer.innerHTML = '';
+                if (!sessions.length) {
+                    showEmpty();
+                    return;
+                }
+                sessions.forEach(addHistoryItem);
+            } catch (err) {
+                showEmpty('Could not load history: ' + err.message);
+            }
+        }
+ 
+        window.addEventListener('load', loadHistory);
+    </script>
+</body>
+</html>
+ 

@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@32,400,0,0" />
+    <title>Video Summary</title>
+    <style>
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #fff;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+ 
+        .main {
+            background-color: #fff;
+            max-width: 1101px;
+            margin: 50px auto;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            margin-left: 250px;
+        }
+ 
+        h1 {
+            font-size: 33px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #2c3e50;
+            text-align: center;
+        }
+ 
+        h4 {
+            font-size: 14px;
+            font-weight: 400;
+            color: #555;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+ 
+       
+        .file-upload-section {
+            text-align: center;
+            padding: 40px 20px;
+            border: 2px dashed #ddd;
+            border-radius: 12px;
+            background-color: #f8f9fa;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+ 
+        .file-upload-section:hover,
+        .file-upload-section.dragover {
+            border-color: #5A4EFB;
+        }
+ 
+        .file-upload-section p {
+            font-size: 16px;
+            color: #555;
+            margin: 10px 0;
+        }
+ 
+        .file-upload-section button {
+            background-color: #695CFE;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+ 
+        .file-upload-section button:hover {
+            background-color: #5A4EFB;
+        }
+ 
+        .file-upload-section .file-name {
+            font-size: 14px;
+            color: #333;
+            margin-top: 10px;
+            font-weight: 500;
+        }
+ 
+       
+        .input-summarize-section {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+ 
+        .input-summarize-section input {
+            flex: 1;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+        }
+ 
+        .input-summarize-section button {
+            background-color: #695CFE;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+ 
+        .input-summarize-section button:hover {
+            background-color: #5A4EFB;
+        }
+ 
+        .input-summarize-section button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+ 
+        
+        .output-section {
+            display: none; 
+            margin-top: 20px;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #ddd;
+        }
+ 
+        .output-section h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-top: 0;
+        }
+ 
+        .output-section .file-info {
+            font-size: 14px;
+            color: #777;
+            margin-bottom: 20px;
+        }
+ 
+        .output-section .file-info span {
+            font-weight: 500;
+        }
+ 
+        .output-section .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+ 
+        .output-section .action-buttons button {
+            background-color: #695CFE;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+ 
+        .output-section .action-buttons button:hover {
+            background-color: #5A4EFB;
+        }
+ 
+        .output-section .content {
+            font-size: 14px;
+            color: #555;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+ 
+        
+        @media (max-width: 600px) {
+            .file-upload-section button, .input-summarize-section button, .output-section .action-buttons button {
+                width: 100%;
+                padding: 12px;
+            }
+ 
+            .input-summarize-section {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="sidebar close">
+        <header>
+            <div class="image-text">
+                <span class="image"></span>
+                <div class="text logo-text">
+                    <span class="name">SummarizeAI</span>
+                </div>
+            </div>
+            <i class='bx bx-chevron-right toggle'></i>
+        </header>
+ 
+        <div class="menu-bar">
+            <div class="menu">
+                <li class="new-chat">
+                    <a href="/">
+                        <i class='bx bx-message-square-add icon'></i>
+                        <span class="text nav-text">New Chat</span>
+                    </a>
+                </li>
+ 
+                <ul class="menu-links">
+                    <li class="nav-link">
+                        <a href="/video-summary">
+                            <i class='bx bx-video icon'></i>
+                            <span class="text nav-text">Video Summary</span>
+                        </a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="/file-summary">
+                            <i class='bx bx-file icon'></i>
+                            <span class="text nav-text">Files Summary</span>
+                        </a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="/text-summary">
+                            <i class='bx bx-paragraph icon'></i>
+                            <span class="text nav-text">Texts Summary</span>
+                        </a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="/history">
+                            <i class='bx bx-history icon'></i>
+                            <span class="text nav-text">History</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="main">
+        
+        <h1>AI Video Summarizer</h1>
+        
+        <h4>AI Video Summarizer can summarize long videos in seconds. It can transcribe videos to text, allowing you to ask questions about the video. The best Video Summary tool helps you save time and learn faster and better.</h4>
+ 
+        
+        <div class="file-upload-section" id="dropZone" onclick="document.getElementById('fileInput').click()">
+            <p>Drag and drop a video file to summarize</p>
+            <button type="button">+ Choose a Video</button>
+            <input type="file" id="fileInput" accept=".mp4,.mov,.avi" style="display: none;" onclick="event.stopPropagation()">
+           
+            <div class="file-name" id="fileNameDisplay"></div>
+        </div>
+ 
+        
+        <div class="input-summarize-section">
+            <input type="text" id="fileUrl" placeholder="your-online-video-url (YouTube)">
+            <button type="button" id="summarizeBtn" onclick="summarize()">Input &amp; Summarize</button>
+        </div>
+ 
+        
+        <div class="output-section" id="outputSection">
+            <h2>Video</h2>
+            <div class="file-info">
+                <span id="outputFileName"></span> | <span id="outputFileSize"></span>
+            </div>
+ 
+           
+            <div class="action-buttons">
+                <button type="button" onclick="showContent('text')">Transcription to Text</button>
+                <button type="button" onclick="showContent('summary')">Summary</button>
+                <button type="button" onclick="showContent('ai chat')">AI Chat</button>
+                <button type="button" onclick="startNewSummary()">New Summary</button>
+            </div>
+ 
+            
+            <div class="content" id="contentDisplay">
+               
+            </div>
+        </div>
+    </div>
+ 
+    <script>
+        const body = document.querySelector('body'),
+            sidebar = body.querySelector('nav'),
+            toggle = body.querySelector(".toggle");
+ 
+        toggle.addEventListener("click", () => {
+            sidebar.classList.toggle("close");
+        });
+ 
+       
+        let transcriptText = '';
+        let summaryData = null;
+ 
+        const fileInput = document.getElementById('fileInput');
+        const fileNameDisplay = document.getElementById('fileNameDisplay');
+        const dropZone = document.getElementById('dropZone');
+        const summarizeBtn = document.getElementById('summarizeBtn');
+ 
+        fileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            fileNameDisplay.textContent = file ? `Selected File: ${file.name}` : '';
+        });
+ 
+        
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            if (e.dataTransfer.files.length > 0) {
+                fileInput.files = e.dataTransfer.files;
+                fileNameDisplay.textContent = `Selected File: ${e.dataTransfer.files[0].name}`;
+            }
+        });
+ 
+        function escapeHtml(str) {
+            return String(str).replace(/[&<>"']/g, (c) => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[c]));
+        }
+ 
+        
+        function renderSummary(summary) {
+            if (!summary) return '<p>No summary available.</p>';
+            if (typeof summary === 'string') return `<p>${escapeHtml(summary)}</p>`;
+ 
+            let html = '';
+            for (const [key, value] of Object.entries(summary)) {
+                const title = escapeHtml(key.replace(/_/g, ' '));
+                if (Array.isArray(value)) {
+                    html += `<p><strong>${title}:</strong></p><ul>` +
+                        value.map(v => `<li>${escapeHtml(typeof v === 'object' ? JSON.stringify(v) : v)}</li>`).join('') +
+                        `</ul>`;
+                } else if (value && typeof value === 'object') {
+                    html += `<p><strong>${title}:</strong> ${escapeHtml(JSON.stringify(value))}</p>`;
+                } else {
+                    html += `<p><strong>${title}:</strong> ${escapeHtml(value)}</p>`;
+                }
+            }
+            return html;
+        }
+ 
+       
+        async function summarize() {
+            const contentDisplay = document.getElementById('contentDisplay');
+            const fileUrl = document.getElementById('fileUrl').value.trim();
+ 
+            if (fileInput.files.length === 0 && !fileUrl) {
+                alert('Please choose a video file or enter a YouTube URL.');
+                return;
+            }
+ 
+            const formData = new FormData();
+            let size = '';
+            if (fileUrl) {
+                formData.append('youtube_url', fileUrl);
+            } else {
+                const file = fileInput.files[0];
+                formData.append('video_file', file);
+                size = "Size: " + (file.size / 1024 / 1024).toFixed(2) + " MB";
+            }
+ 
+            document.getElementById('outputSection').style.display = 'block';
+            contentDisplay.innerHTML = '<p>Processing video... Please wait (this can take a while).</p>';
+            summarizeBtn.disabled = true;
+ 
+            try {
+                const response = await fetch('/process-video', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+ 
+                if (!response.ok || data.error) {
+                    contentDisplay.innerHTML = `<p style="color:red;">Error: ${escapeHtml(data.error || 'Unknown error')}</p>`;
+                    return;
+                }
+ 
+                transcriptText = data.transcript || '';
+                summaryData = data.summary;
+ 
+                document.getElementById('outputFileName').textContent = data.video_title || 'Video';
+                document.getElementById('outputFileSize').textContent = size;
+ 
+                showContent('summary');
+            } catch (err) {
+                contentDisplay.innerHTML = `<p style="color:red;">Network error: ${escapeHtml(err.message)}</p>`;
+            } finally {
+                summarizeBtn.disabled = false;
+            }
+        }
+ 
+        
+        function showContent(type) {
+            const contentDisplay = document.getElementById('contentDisplay');
+ 
+            if (!summaryData && !transcriptText && type !== 'ai chat') {
+                contentDisplay.innerHTML = '<p>Please summarize a video first.</p>';
+                return;
+            }
+ 
+            switch (type) {
+                case 'text':
+                    contentDisplay.innerHTML = `<p><strong>📄 Transcription to Text:</strong></p><p>${escapeHtml(transcriptText)}</p>`;
+                    break;
+                case 'summary':
+                    contentDisplay.innerHTML = `<p><strong>📝 Summary:</strong></p>${renderSummary(summaryData)}`;
+                    break;
+                case 'ai chat':
+                    contentDisplay.innerHTML = '<p><strong>🤖 AI Chat:</strong> Coming soon.</p>';
+                    break;
+                default:
+                    contentDisplay.innerHTML = '<p>No content available.</p>';
+            }
+        }
+ 
+        
+        function startNewSummary() {
+            fileInput.value = '';
+            fileNameDisplay.textContent = '';
+            document.getElementById('fileUrl').value = '';
+            document.getElementById('outputSection').style.display = 'none';
+            document.getElementById('contentDisplay').innerHTML = '';
+            transcriptText = '';
+            summaryData = null;
+        }
+    </script>
+</body>
+</html>
+ 
